@@ -220,6 +220,15 @@ device; it is included only so the tests exercise real data.
 To support another setting, add it to `CURATED` in `catalog.py`, add its translations, and extend
 `test_only_reviewed_registers_can_change_the_controller`.
 
+### Releasing
+
+1. Set the new version in `custom_components/pello/manifest.json`.
+2. Move the entries under `Unreleased` in `CHANGELOG.md` to a section for that version.
+3. Commit, then tag the commit `v<version>` and push the tag.
+
+The release workflow checks that the tag matches the manifest, runs the tests and publishes a
+GitHub release with the changelog section as its notes. HACS offers that release as an update.
+
 ## License
 
 [Apache License 2.0](LICENSE).
