@@ -123,7 +123,9 @@ class PelloCoordinator(DataUpdateCoordinator[Snapshot]):
             raise HomeAssistantError(f"Could not change {tid}: {err}") from err
         except PelloError as err:
             raise HomeAssistantError(f"Could not change {tid}: {err}") from err
-        await self.async_request_refresh()
+        # Not async_request_refresh: its cooldown would leave the old value on screen
+        # for several seconds after a second change in a row.
+        await self.async_refresh()
 
     def device_info(self, vid: int) -> DeviceInfo:
         """Describe the controller or one of its radio nodes for the device registry."""

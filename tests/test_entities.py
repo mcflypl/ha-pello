@@ -205,6 +205,21 @@ async def test_changing_a_setpoint_writes_one_register(hass, controller, loaded)
     assert controller.writes == ["device=0&kot_tzad=70"]
 
 
+async def test_state_follows_consecutive_writes_immediately(hass, controller, loaded):
+    for value in ("60", "65"):
+        controller.set("kot_tzad", value)
+        controller.expect_write(f"device=0&kot_tzad={value}", write_response("kot_tzad"))
+
+        await hass.services.async_call(
+            "number",
+            "set_value",
+            {"entity_id": "number.boiler_setpoint", "value": int(value)},
+            blocking=True,
+        )
+
+        assert hass.states.get("number.boiler_setpoint").state == value
+
+
 async def test_fractional_setting_keeps_one_decimal(hass, controller, loaded):
     controller.expect_write("device=0&ob1_pok_norm=22.5", write_response("ob1_pok_norm"))
 
