@@ -1,0 +1,386 @@
+# Example dashboard for the Pello integration (labels in Polish).
+# Paste into a dashboard's raw configuration editor.
+# Entity ids assume the device is named "Pello"; replace the `pello_` prefix with yours.
+# Requires the custom cards mini-graph-card and auto-entities (both available in HACS).
+# Settings are plain tiles on purpose: a setpoint should not change by a stray tap.
+views:
+- type: sections
+  title: Boiler
+  path: boiler
+  icon: mdi:fire
+  max_columns: 4
+  dense_section_placement: true
+  sections:
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Kocioł
+      heading_style: title
+      icon: mdi:water-boiler
+    - type: tile
+      entity: sensor.pello_status
+      name: Kocioł
+    - type: tile
+      entity: sensor.pello_burner_status_detail
+      name: Palnik
+    - type: tile
+      entity: sensor.pello_water_temperature
+      name: Temp. kotła
+    - type: tile
+      entity: sensor.pello_active_setpoint
+      name: Zadana teraz
+    - type: tile
+      entity: sensor.pello_return_temperature
+      name: Powrót
+    - type: tile
+      entity: sensor.pello_flue_gas_temperature
+      name: Spaliny
+    - type: tile
+      entity: number.pello_setpoint
+      name: 'Nastawa: temperatura kotła'
+      grid_options:
+        columns: full
+      icon: mdi:thermometer-lines
+    - type: custom:mini-graph-card
+      name: Kocioł · 24 h
+      hours_to_show: 24
+      points_per_hour: 4
+      line_width: 2
+      font_size: 75
+      show:
+        legend: true
+        labels: false
+        fill: fade
+      entities:
+      - entity: sensor.pello_water_temperature
+        name: Kocioł
+      - entity: sensor.pello_return_temperature
+        name: Powrót
+      - entity: sensor.pello_flue_gas_temperature
+        name: Spaliny
+      grid_options:
+        columns: full
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Palnik
+      heading_style: title
+      icon: mdi:fire
+    - type: tile
+      entity: sensor.pello_burner_power
+      name: Moc
+    - type: tile
+      entity: sensor.pello_burner_power_level
+      name: Poziom mocy
+    - type: tile
+      entity: sensor.pello_flame
+      name: Płomień
+    - type: tile
+      entity: sensor.pello_fuel_flow
+      name: Strumień
+    - type: tile
+      entity: sensor.pello_fan_power
+      name: Dmuchawa
+    - type: tile
+      entity: sensor.pello_fan_speed
+      name: Obroty
+    - type: tile
+      entity: sensor.pello_pressure_difference
+      name: Ciśnienie
+    - type: tile
+      entity: sensor.pello_feeder_temperature
+      name: T. podajnika
+    - type: tile
+      entity: binary_sensor.pello_feeder
+      name: Podajnik
+    - type: tile
+      entity: binary_sensor.pello_stoker
+      name: Sztoker
+    - type: tile
+      entity: binary_sensor.pello_fan
+      name: Dmuchawa
+    - type: tile
+      entity: binary_sensor.pello_igniter
+      name: Grzałka
+    - type: tile
+      entity: binary_sensor.pello_burner_cleaning
+      name: Czyszczenie
+    - type: tile
+      entity: binary_sensor.pello_grate_position
+      name: Ruszt
+    - type: tile
+      entity: sensor.pello_ignition_count
+      name: Rozpalenia
+    - type: tile
+      entity: sensor.pello_burner_runtime
+      name: Czas pracy
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Paliwo
+      heading_style: title
+      icon: mdi:silo
+    - type: gauge
+      entity: sensor.pello_fuel_level
+      name: Poziom paliwa
+      min: 0
+      max: 100
+      needle: true
+      severity:
+        red: 0
+        yellow: 15
+        green: 30
+      grid_options:
+        columns: full
+    - type: tile
+      entity: sensor.pello_next_refuel
+      name: Kolejny zasyp
+    - type: tile
+      entity: sensor.pello_last_refuel
+      name: Ostatni zasyp
+    - type: tile
+      entity: sensor.pello_feeder_runtime
+      name: Praca podajnika od zasypu
+      grid_options:
+        columns: full
+    - type: tile
+      entity: sensor.pello_pellets_since_cleaning
+      name: Pellet od czyszczenia wymiennika
+      grid_options:
+        columns: full
+    - type: tile
+      entity: binary_sensor.pello_hopper_sensor
+      name: Czujnik zasobnika
+      grid_options:
+        columns: full
+    - type: custom:mini-graph-card
+      name: Poziom paliwa · 7 dni
+      hours_to_show: 168
+      points_per_hour: 1
+      line_width: 2
+      font_size: 75
+      show:
+        legend: true
+        labels: false
+        fill: fade
+      entities:
+      - entity: sensor.pello_fuel_level
+        name: Paliwo
+      grid_options:
+        columns: full
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: CWU i bufor
+      heading_style: title
+      icon: mdi:water-thermometer
+    - type: tile
+      entity: sensor.pello_dhw_temperature
+      name: CWU
+    - type: tile
+      entity: sensor.pello_dhw_heating_status
+      name: Grzanie CWU
+    - type: tile
+      entity: binary_sensor.pello_dhw_pump
+      name: Pompa CWU
+    - type: tile
+      entity: sensor.pello_dhw_active_setpoint
+      name: Zadana teraz
+    - type: tile
+      entity: number.pello_dhw_setpoint
+      name: 'Nastawa: temperatura CWU'
+      grid_options:
+        columns: full
+      icon: mdi:thermometer-lines
+    - type: tile
+      entity: select.pello_dhw_mode
+      name: 'Nastawa: tryb CWU'
+      grid_options:
+        columns: full
+    - type: tile
+      entity: sensor.pello_buffer_top_temperature
+      name: Bufor góra
+    - type: tile
+      entity: sensor.pello_buffer_bottom_temperature
+      name: Bufor dół
+    - type: tile
+      entity: binary_sensor.pello_buffer_pump
+      name: Pompa bufora
+    - type: tile
+      entity: number.pello_buffer_setpoint
+      name: 'Nastawa: temperatura bufora'
+      grid_options:
+        columns: full
+      icon: mdi:thermometer-lines
+    - type: custom:mini-graph-card
+      name: CWU i bufor · 24 h
+      hours_to_show: 24
+      points_per_hour: 4
+      line_width: 2
+      font_size: 75
+      show:
+        legend: true
+        labels: false
+        fill: fade
+      entities:
+      - entity: sensor.pello_dhw_temperature
+        name: CWU
+      - entity: sensor.pello_buffer_top_temperature
+        name: Bufor góra
+      - entity: sensor.pello_buffer_bottom_temperature
+        name: Bufor dół
+      grid_options:
+        columns: full
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Ogrzewanie
+      heading_style: title
+      icon: mdi:radiator
+    - type: tile
+      entity: sensor.pello_zone_1_temperature_temperature
+      name: Pokój
+    - type: tile
+      entity: sensor.pello_zone_1_temperature_humidity
+      name: Wilgotność
+    - type: tile
+      entity: sensor.pello_room_active_setpoint
+      name: Zadana teraz
+    - type: tile
+      entity: sensor.pello_outdoor_temperature
+      name: Na zewnątrz
+    - type: tile
+      entity: binary_sensor.pello_pump_1
+      name: Pompa CO
+    - type: tile
+      entity: binary_sensor.pello_thermostat_1
+      name: Termostat
+    - type: tile
+      entity: sensor.pello_mixing_valve_temperature
+      name: Za zaworem
+    - type: tile
+      entity: sensor.pello_mixing_valve_active_setpoint
+      name: Zadana zawór
+    - type: tile
+      entity: sensor.pello_mixing_valve_position
+      name: Poz. zaworu
+    - type: tile
+      entity: sensor.pello_mixing_valve_action
+      name: Ruch zaworu
+    - type: tile
+      entity: sensor.pello_season
+      name: Sezon
+      grid_options:
+        columns: full
+    - type: tile
+      entity: select.pello_season_mode
+      name: 'Nastawa: tryb zima/lato'
+      grid_options:
+        columns: full
+    - type: tile
+      entity: number.pello_room_temperature_normal
+      name: 'Nastawa: pokój normalna'
+      grid_options:
+        columns: full
+      icon: mdi:thermometer-lines
+    - type: tile
+      entity: number.pello_room_temperature_comfort
+      name: 'Nastawa: pokój komfortowa'
+      grid_options:
+        columns: full
+      icon: mdi:thermometer-lines
+    - type: tile
+      entity: number.pello_room_temperature_low
+      name: 'Nastawa: pokój niska'
+      grid_options:
+        columns: full
+      icon: mdi:thermometer-lines
+    - type: tile
+      entity: number.pello_mixing_valve_setpoint
+      name: 'Nastawa: temperatura za zaworem'
+      grid_options:
+        columns: full
+      icon: mdi:thermometer-lines
+    - type: custom:mini-graph-card
+      name: Ogrzewanie · 24 h
+      hours_to_show: 24
+      points_per_hour: 4
+      line_width: 2
+      font_size: 75
+      show:
+        legend: true
+        labels: false
+        fill: fade
+      entities:
+      - entity: sensor.pello_zone_1_temperature_temperature
+        name: Pomieszczenie
+      - entity: sensor.pello_outdoor_temperature
+        name: Zewnątrz
+      - entity: sensor.pello_mixing_valve_temperature
+        name: Za zaworem
+      grid_options:
+        columns: full
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Alarmy i sterownik
+      heading_style: title
+      icon: mdi:alert-circle-outline
+    - type: tile
+      entity: binary_sensor.pello_alarm
+      name: Alarm
+      grid_options:
+        columns: full
+    - type: custom:auto-entities
+      show_empty: false
+      card:
+        type: entities
+        title: Aktywne alarmy
+      filter:
+        include:
+        - entity_id: binary_sensor.pello_*
+          state: 'on'
+          attributes:
+            device_class: problem
+        exclude:
+        - entity_id: binary_sensor.pello_alarm
+      grid_options:
+        columns: full
+    - type: tile
+      entity: button.pello_acknowledge_alarms
+      name: Potwierdź alarmy
+      grid_options:
+        columns: full
+      tap_action:
+        action: perform-action
+        perform_action: button.press
+        target:
+          entity_id: button.pello_acknowledge_alarms
+        confirmation:
+          text: Potwierdzić alarmy w sterowniku pieca?
+      icon_tap_action:
+        action: perform-action
+        perform_action: button.press
+        target:
+          entity_id: button.pello_acknowledge_alarms
+        confirmation:
+          text: Potwierdzić alarmy w sterowniku pieca?
+      hide_state: true
+    - type: tile
+      entity: sensor.pello_operating_mode
+      name: Tryb pracy
+    - type: tile
+      entity: binary_sensor.pello_external_alarm_input
+      name: Alarm zewn.
+    - type: tile
+      entity: sensor.pello_zone_1_temperature_battery
+      name: Bateria
+    - type: tile
+      entity: sensor.pello_zone_1_temperature_signal
+      name: Sygnał
