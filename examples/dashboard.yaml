@@ -72,8 +72,8 @@ views:
       entity: sensor.pello_burner_power
       name: Moc
     - type: tile
-      entity: sensor.pello_burner_power_level
-      name: Poziom mocy
+      entity: sensor.pello_burner_power_stage
+      name: Stopień mocy
     - type: tile
       entity: sensor.pello_flame
       name: Płomień

@@ -185,8 +185,14 @@
       "burner_power": {
         "name": "Moc palnika"
       },
-      "burner_power_level": {
-        "name": "Poziom mocy palnika"
+      "burner_power_stage": {
+        "name": "Stopień mocy palnika",
+        "state": {
+          "off": "Wyłączony",
+          "minimum": "Minimalna",
+          "intermediate": "Pośrednia",
+          "maximum": "Maksymalna"
+        }
       },
       "burner_runtime": {
         "name": "Czas pracy palnika"

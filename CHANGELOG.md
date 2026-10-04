@@ -5,6 +5,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-10-04
+
+### Fixed
+
+- The burner power register (`pl_power`) is shown as a power stage (off, minimum, intermediate,
+  maximum, as named in the controller manual) instead of a percentage of 0–3%. Existing
+  installations keep the old entity ID `…_burner_power_level`; its percentage statistics stop.
+
 ## [1.0.0] - 2026-10-02
 
 ### Added

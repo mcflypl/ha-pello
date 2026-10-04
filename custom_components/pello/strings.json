@@ -185,8 +185,14 @@
       "burner_power": {
         "name": "Burner power"
       },
-      "burner_power_level": {
-        "name": "Burner power level"
+      "burner_power_stage": {
+        "name": "Burner power stage",
+        "state": {
+          "off": "Off",
+          "minimum": "Minimum",
+          "intermediate": "Intermediate",
+          "maximum": "Maximum"
+        }
       },
       "burner_runtime": {
         "name": "Burner runtime"

@@ -22,6 +22,7 @@ from .models import (
     ACCESS_WRITE,
     Dictionary,
     RegisterDef,
+    RegisterOption,
     Snapshot,
     VirtualDevice,
 )
@@ -126,6 +127,14 @@ BURNER_STATUS = {
     "4": "cleaning",
 }
 
+# Power stage of the burner in the heating phase, as named in the controller manual.
+BURNER_POWER_STAGE = {
+    "0": "off",
+    "1": "minimum",
+    "2": "intermediate",
+    "3": "maximum",
+}
+
 BURNER_STATUS_DETAIL = {
     "0": "stop",
     "1": "ignition",
@@ -175,7 +184,7 @@ CURATED: Mapping[str, Curated] = {
     "pl_status": _enum("burner_status", BURNER_STATUS),
     "pl_status_ext": _enum("burner_status_detail", BURNER_STATUS_DETAIL),
     "pl_power_kw": _measurement("burner_power", device_class=SensorDeviceClass.POWER),
-    "pl_power": _measurement("burner_power_level"),
+    "pl_power": _enum("burner_power_stage", BURNER_POWER_STAGE),
     "pl_flame": _measurement("flame"),
     "pl_fuel_flow": _measurement("fuel_flow"),
     "act_dm_speed": _measurement("fan_power"),
@@ -283,7 +292,12 @@ NODE_CURATED: Mapping[str, Curated] = {
 
 # Registers the controller reports but leaves out of its dictionary.
 EXTRA_REGISTERS: Mapping[str, RegisterDef] = {
-    "pl_power": RegisterDef(tid="pl_power", type="float", priv="rrrrr", unit="%", precision=0),
+    "pl_power": RegisterDef(
+        tid="pl_power",
+        type=TYPE_ENUM,
+        priv="rrrrr",
+        options=tuple(RegisterOption(id=value, labels={}) for value in BURNER_POWER_STAGE),
+    ),
     "clean_act_kg": RegisterDef(
         tid="clean_act_kg", type="float", priv="rrrrr", unit="kg", precision=1
     ),

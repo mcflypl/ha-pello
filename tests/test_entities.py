@@ -56,6 +56,19 @@ async def test_curated_enum_sensor_uses_stable_states(hass, controller, loaded):
     assert hass.states.get("sensor.boiler_burner_status").state == "heating"
 
 
+async def test_burner_power_stage_is_an_enum_not_a_percentage(hass, controller, loaded):
+    state = hass.states.get("sensor.boiler_burner_power_stage")
+    assert state.state == "off"
+    assert state.attributes["options"] == ["off", "minimum", "intermediate", "maximum"]
+    assert "unit_of_measurement" not in state.attributes
+    assert "state_class" not in state.attributes
+
+    controller.set("pl_power", "3")
+    await refresh(hass, loaded)
+
+    assert hass.states.get("sensor.boiler_burner_power_stage").state == "maximum"
+
+
 async def test_enum_value_missing_from_the_dictionary_is_unknown(hass, controller, loaded):
     controller.set("pl_status_ext", "999")
 
