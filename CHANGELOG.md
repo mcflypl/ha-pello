@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [1.0.2] - 2026-10-04
+
 ### Changed
 
 - `defusedxml` is required as `>=0.7.1` instead of an exact pin, so it follows the version
