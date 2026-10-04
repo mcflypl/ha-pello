@@ -5,6 +5,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Changed
+
+- `defusedxml` is required as `>=0.7.1` instead of an exact pin, so it follows the version
+  Home Assistant ships.
+- HACS and hassfest validation run on every push, pull request and daily.
+
 ## [1.0.1] - 2026-10-04
 
 ### Fixed
