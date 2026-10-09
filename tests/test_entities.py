@@ -357,3 +357,14 @@ async def test_controls_are_limited_to_the_reviewed_set(hass, loaded):
         "select.boiler_dhw_mode",
         "select.boiler_season_mode",
     ]
+
+
+async def test_room_heating_demand_follows_the_undocumented_room_regulator_register(
+    hass, controller, loaded
+):
+    assert hass.states.get("binary_sensor.boiler_room_heating_demand").state == "off"
+
+    controller.set("ob1_pok_heat", "1")
+    await refresh(hass, loaded)
+
+    assert hass.states.get("binary_sensor.boiler_room_heating_demand").state == "on"

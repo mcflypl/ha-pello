@@ -111,6 +111,9 @@
       "external_alarm_input": {
         "name": "Wejście alarmu zewnętrznego"
       },
+      "room_heating_demand": {
+        "name": "Zapotrzebowanie na ciepło w pomieszczeniu"
+      },
       "alarm": {
         "name": "Alarm"
       }

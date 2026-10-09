@@ -111,6 +111,9 @@
       "external_alarm_input": {
         "name": "External alarm input"
       },
+      "room_heating_demand": {
+        "name": "Room heating demand"
+      },
       "alarm": {
         "name": "Alarm"
       }

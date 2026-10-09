@@ -256,6 +256,7 @@ CURATED: Mapping[str, Curated] = {
     "di_zawl": _input("grate_position"),
     "di_zas": _input("hopper_sensor"),
     "di_alarm": _input("external_alarm_input"),
+    "ob1_pok_heat": _input("room_heating_demand"),
     # Control
     "kot_tzad": _setpoint("setpoint"),
     "cwu_tzad": _setpoint("dhw_setpoint"),
@@ -300,6 +301,14 @@ EXTRA_REGISTERS: Mapping[str, RegisterDef] = {
     ),
     "clean_act_kg": RegisterDef(
         tid="clean_act_kg", type="float", priv="rrrrr", unit="kg", precision=1
+    ),
+    # Whether the room regulator of circuit 1 calls for heat; when it does not, the controller
+    # lowers the mixing valve setpoint by ob1_tobn.
+    "ob1_pok_heat": RegisterDef(
+        tid="ob1_pok_heat",
+        type=TYPE_ENUM,
+        priv="rrrrr",
+        options=(RegisterOption(id="0", labels={}), RegisterOption(id="1", labels={})),
     ),
 }
 

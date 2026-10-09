@@ -5,6 +5,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-10-09
+
+### Added
+
+- Room heating demand binary sensor for circuit 1 (`ob1_pok_heat`, missing from the controller's
+  register dictionary). While it is off, the controller lowers the mixing valve setpoint by its
+  reduction setting.
+
 ## [1.0.2] - 2026-10-04
 
 ### Changed
