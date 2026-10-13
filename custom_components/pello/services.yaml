@@ -1,0 +1,15 @@
+add_fuel:
+  fields:
+    config_entry_id:
+      required: true
+      selector:
+        config_entry:
+          integration: pello
+    amount:
+      required: true
+      selector:
+        number:
+          min: 1
+          max: 200
+          unit_of_measurement: kg
+          mode: box

@@ -401,5 +401,21 @@
         "name": "Temperatura kotła"
       }
     }
+  },
+  "services": {
+    "add_fuel": {
+      "name": "Zasyp paliwa",
+      "description": "Informuje sterownik o uzupełnieniu zasobnika, co oznacza go jako pełny i liczy od nowa termin kolejnego zasypu.",
+      "fields": {
+        "config_entry_id": {
+          "name": "Sterownik",
+          "description": "Sterownik Pello, którego zasobnik uzupełniono."
+        },
+        "amount": {
+          "name": "Ilość",
+          "description": "Ilość wsypanego pelletu w kilogramach."
+        }
+      }
+    }
   }
 }

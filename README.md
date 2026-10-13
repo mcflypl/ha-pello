@@ -32,7 +32,7 @@ with the settings that can be changed and the sensors.
   alarm messages come from the device, in English or Polish.
 - About 100 entities enabled out of the box, with stable English entity ids.
 - Every other register is available as a disabled sensor you can switch on when you need it.
-- Setpoints and modes can be changed; everything that could harm the installation is read-only.
+- Setpoints and modes can be changed, and refuels recorded with an action; everything that could harm the installation is read-only.
 - One binary sensor per alarm, plus a summary sensor listing every active alarm.
 - Reauthentication, reconfiguration (new address), diagnostics, read-only mode.
 
@@ -138,6 +138,7 @@ grant to the account:
 | Hot water mode (off, schedule, on, +1 h, +2 h) | `cwu_state` |
 | Acknowledge alarms | `cmd_ackalarm` |
 | Restart (disabled by default) | `cmd_reset` |
+| Action `pello.add_fuel` (refuel) | `add_fuel` |
 
 Values are limited to the range and step the controller declares.
 
@@ -147,8 +148,22 @@ there can damage the installation. The list lives in `CURATED` in
 [`catalog.py`](custom_components/pello/catalog.py) and a test pins it, so adding a control is
 always a deliberate change.
 
-The integration writes only when you change a number or a select or press a button. Setup and
-polling never write.
+The integration writes only when you change a number or a select, press a button or run an
+action. Setup and polling never write.
+
+### Refuelling
+
+After filling the hopper, run the `pello.add_fuel` action with the amount poured in, in kilograms
+(within the range the controller declares, 1–200 kg). The controller marks the hopper as full and
+restarts its estimate of the next refuel. The action fails unless the controller stamps a new
+"Last refuel" time, so an automation can rely on it having been recorded.
+
+```yaml
+action: pello.add_fuel
+data:
+  config_entry_id: 0123456789abcdef0123456789abcdef
+  amount: 60
+```
 
 ### Example: notify about an alarm
 

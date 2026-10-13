@@ -4,14 +4,17 @@ from __future__ import annotations
 
 from homeassistant.const import CONF_HOST, CONF_PASSWORD, CONF_USERNAME, Platform
 from homeassistant.core import HomeAssistant, callback
+from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
+from homeassistant.helpers.typing import ConfigType
 
 from .api import PelloClient
 from .catalog import CONTROL_PLATFORMS
-from .const import MAIN_VID
+from .const import DOMAIN, MAIN_VID
 from .coordinator import PelloConfigEntry, PelloCoordinator
+from .services import async_setup_services
 
 PLATFORMS = [
     Platform.BINARY_SENSOR,
@@ -20,6 +23,14 @@ PLATFORMS = [
     Platform.SELECT,
     Platform.SENSOR,
 ]
+
+CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
+
+
+async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
+    """Register the actions, which stay available while no controller is loaded."""
+    async_setup_services(hass)
+    return True
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: PelloConfigEntry) -> bool:

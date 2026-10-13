@@ -5,6 +5,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-10-13
+
+### Added
+
+- `pello.add_fuel` action recording a hopper refill (`add_fuel`, in kilograms). It fails when the
+  controller does not stamp a new last refuel time, so automations can rely on its success.
+
 ## [1.1.0] - 2026-10-09
 
 ### Added

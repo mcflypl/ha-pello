@@ -401,5 +401,21 @@
         "name": "Water temperature"
       }
     }
+  },
+  "services": {
+    "add_fuel": {
+      "name": "Add fuel",
+      "description": "Tells the controller the hopper was refilled, which marks it as full and restarts the refuel estimate.",
+      "fields": {
+        "config_entry_id": {
+          "name": "Controller",
+          "description": "The Pello controller that was refilled."
+        },
+        "amount": {
+          "name": "Amount",
+          "description": "Pellets poured into the hopper, in kilograms."
+        }
+      }
+    }
   }
 }

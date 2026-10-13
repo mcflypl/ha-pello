@@ -104,5 +104,10 @@
         "default": "mdi:bell-check"
       }
     }
+  },
+  "services": {
+    "add_fuel": {
+      "service": "mdi:silo"
+    }
   }
 }
