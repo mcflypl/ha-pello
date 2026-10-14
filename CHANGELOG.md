@@ -5,6 +5,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-10-15
+
+### Added
+
+- Operating mode select (manual, automatic). It writes `tryb_auto`, which the controller never
+  reports, and shows the state from `tryb_auto_state`; during an alarm the select is unknown.
+- Switches for every power output (pumps, feeder, stoker, fan, igniter, auxiliary output, burner
+  and exchanger cleaning) and a mixing valve action select, available only in manual mode. The
+  binary sensors of the outputs stay as they were.
+- Regulation settings as configuration entities: boiler, hot water and mixing valve reductions,
+  hot water, buffer and room hysteresis, boiler and mixing valve weather control with their
+  heating curves, auto summer threshold and hysteresis, heating pumps start temperature. They
+  replace the disabled read-only sensors of the same registers.
+
 ## [1.2.0] - 2026-10-13
 
 ### Added

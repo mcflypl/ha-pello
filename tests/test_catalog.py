@@ -29,8 +29,18 @@ def snapshot():
 
 
 def specs_by_tid(dictionary, snapshot, access_level=ROOT, read_only=False, vid=0):
+    """Entities of one slot by register, leaving out the manual controls of power outputs."""
     specs = build_specs(dictionary, snapshot, access_level, read_only)
-    return {spec.register.tid: spec for spec in specs if spec.vid == vid}
+    return {
+        spec.register.tid: spec
+        for spec in specs
+        if spec.vid == vid and not (spec.curated and spec.curated.manual_only)
+    }
+
+
+def manual_controls(dictionary, snapshot, access_level=ROOT, read_only=False):
+    specs = build_specs(dictionary, snapshot, access_level, read_only)
+    return {spec.register.tid: spec for spec in specs if spec.curated and spec.curated.manual_only}
 
 
 def with_values(snapshot, vid, **values):
@@ -84,10 +94,40 @@ def test_only_reviewed_registers_can_change_the_controller(dictionary, snapshot)
         "ob1_pok_lo": Platform.NUMBER,
         "ob1_pok_norm": Platform.NUMBER,
         "ob1_pok_hi": Platform.NUMBER,
+        "kot_tobn": Platform.NUMBER,
+        "pog_en": Platform.SWITCH,
+        "pog_krzyw1": Platform.NUMBER,
+        "pog_krzyw2": Platform.NUMBER,
+        "cwu_tobn": Platform.NUMBER,
+        "cwu_hist1": Platform.NUMBER,
+        "cwu_hist2": Platform.NUMBER,
+        "tank_hist": Platform.NUMBER,
+        "ob1_tobn": Platform.NUMBER,
+        "ob1_pog_en": Platform.SWITCH,
+        "ob1_pog_krzyw1": Platform.NUMBER,
+        "ob1_pog_krzyw2": Platform.NUMBER,
+        "ob1_pok_hist": Platform.NUMBER,
+        "autolato_tzew": Platform.NUMBER,
+        "autolato_hist": Platform.NUMBER,
+        "pomp_co_ton": Platform.NUMBER,
+        "tryb_auto": Platform.SELECT,
         "zima_lato": Platform.SELECT,
         "cwu_state": Platform.SELECT,
         "cmd_ackalarm": Platform.BUTTON,
         "cmd_reset": Platform.BUTTON,
+        "out_pomp1": Platform.SWITCH,
+        "out_pomp2": Platform.SWITCH,
+        "out_cwu": Platform.SWITCH,
+        "out_miesz": Platform.SWITCH,
+        "out_tank": Platform.SWITCH,
+        "out_pod": Platform.SWITCH,
+        "out_dm": Platform.SWITCH,
+        "out_aux": Platform.SWITCH,
+        "out_clean_wym": Platform.SWITCH,
+        "mpl_feed": Platform.SWITCH,
+        "mpl_heat": Platform.SWITCH,
+        "mpl_clean": Platform.SWITCH,
+        "out_zaw4d": Platform.SELECT,
     }
 
 
@@ -119,7 +159,7 @@ def test_read_only_mode_creates_no_controls(dictionary, snapshot):
     "tid",
     [
         "kot_hist",
-        "pog_en",
+        "zaw4d_hist",
         "exh_fan_mode",
         "exh_fan_speed",
         "en_ext_out",
@@ -216,7 +256,66 @@ def test_hopper_calibration_is_not_presented_as_a_countdown(dictionary, snapshot
 
 
 def test_register_missing_from_the_values_is_skipped(dictionary, snapshot):
-    assert "tryb_auto" not in specs_by_tid(dictionary, snapshot)
+    assert "cwu_hist1" in specs_by_tid(dictionary, snapshot)
+
+    device = snapshot.devices[0]
+    values = {tid: value for tid, value in device.values.items() if tid != "cwu_hist1"}
+    missing = Snapshot(devices={**snapshot.devices, 0: DeviceValues(0, device.timestamp, values)})
+
+    assert "cwu_hist1" not in specs_by_tid(dictionary, missing)
+
+
+def test_temperature_difference_is_not_converted_like_a_temperature(dictionary, snapshot):
+    spec = specs_by_tid(dictionary, snapshot)["tank_hist"]
+
+    assert spec.platform is Platform.NUMBER
+    assert spec.key == "buffer_hysteresis"
+    assert spec.curated.device_class is None
+    assert spec.curated.unit == "°C"
+    assert spec.category is EntityCategory.CONFIG
+
+
+def test_settings_that_cannot_be_written_keep_their_kind(dictionary, snapshot):
+    specs = specs_by_tid(dictionary, snapshot, read_only=True)
+
+    assert specs["pog_en"].platform is Platform.BINARY_SENSOR
+    assert specs["pog_en"].key == "boiler_weather_control"
+    assert specs["tank_hist"].platform is Platform.SENSOR
+    assert specs["tank_hist"].curated.device_class is None
+    assert specs["pog_krzyw1"].curated.device_class == "temperature"
+
+
+def test_operating_mode_is_written_to_one_register_and_read_from_another(dictionary, snapshot):
+    spec = specs_by_tid(dictionary, snapshot)["tryb_auto"]
+
+    assert "tryb_auto" not in snapshot.devices[0].values
+    assert spec.platform is Platform.SELECT
+    assert spec.key == "operating_mode"
+    assert spec.state_tid == "tryb_auto_state"
+    assert spec.curated.options == {"0": "manual", "1": "automatic"}
+
+
+def test_operating_mode_control_disappears_when_it_cannot_be_written(dictionary, snapshot):
+    specs = specs_by_tid(dictionary, snapshot, read_only=True)
+
+    assert "tryb_auto" not in specs
+    assert specs["tryb_auto_state"].key == "operating_mode"
+
+
+def test_power_outputs_get_manual_controls_beside_their_sensors(dictionary, snapshot):
+    controls = manual_controls(dictionary, snapshot)
+    sensors = specs_by_tid(dictionary, snapshot)
+
+    assert controls["out_pomp1"].platform is Platform.SWITCH
+    assert controls["out_pomp1"].key == sensors["out_pomp1"].key == "pump_1"
+    assert sensors["out_pomp1"].platform is Platform.BINARY_SENSOR
+    assert controls["out_zaw4d"].platform is Platform.SELECT
+    assert sensors["out_zaw4d"].platform is Platform.SENSOR
+
+
+def test_power_outputs_have_no_controls_in_read_only_mode(dictionary, snapshot):
+    assert manual_controls(dictionary, snapshot, read_only=True) == {}
+    assert manual_controls(dictionary, snapshot, access_level=USER) == {}
 
 
 def test_undocumented_register_gets_a_handwritten_definition(dictionary, snapshot):

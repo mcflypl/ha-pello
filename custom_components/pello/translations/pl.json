@@ -116,6 +116,12 @@
       },
       "alarm": {
         "name": "Alarm"
+      },
+      "boiler_weather_control": {
+        "name": "Regulator pogodowy kotła"
+      },
+      "mixing_valve_weather_control": {
+        "name": "Regulator pogodowy za zaworem"
       }
     },
     "button": {
@@ -147,6 +153,48 @@
       },
       "room_temperature_comfort": {
         "name": "Temp. pokojowa komfortowa"
+      },
+      "boiler_reduction": {
+        "name": "Obniżenie temperatury kotła"
+      },
+      "boiler_curve_minus_10": {
+        "name": "Krzywa kotła dla -10°C"
+      },
+      "boiler_curve_plus_10": {
+        "name": "Krzywa kotła dla +10°C"
+      },
+      "dhw_reduction": {
+        "name": "Obniżenie temperatury CWU"
+      },
+      "dhw_hysteresis": {
+        "name": "Histereza CWU"
+      },
+      "dhw_priority_hysteresis": {
+        "name": "Histereza priorytetu CWU"
+      },
+      "buffer_hysteresis": {
+        "name": "Histereza bufora"
+      },
+      "mixing_valve_reduction": {
+        "name": "Obniżenie temperatury za zaworem"
+      },
+      "mixing_valve_curve_minus_10": {
+        "name": "Krzywa za zaworem dla -10°C"
+      },
+      "mixing_valve_curve_plus_10": {
+        "name": "Krzywa za zaworem dla +10°C"
+      },
+      "room_temperature_hysteresis": {
+        "name": "Histereza temperatury pokojowej"
+      },
+      "auto_summer_temperature": {
+        "name": "Temperatura zewnętrzna Auto-Lato"
+      },
+      "auto_summer_hysteresis": {
+        "name": "Histereza Auto-Lato"
+      },
+      "heating_pumps_start_temperature": {
+        "name": "Temperatura załączenia pomp CO"
       }
     },
     "select": {
@@ -166,6 +214,21 @@
           "on": "Załączone",
           "plus_1h": "+1 godzina",
           "plus_2h": "+2 godziny"
+        }
+      },
+      "operating_mode": {
+        "name": "Tryb pracy",
+        "state": {
+          "manual": "Ręczny",
+          "automatic": "Automatyczny"
+        }
+      },
+      "mixing_valve_action": {
+        "name": "Ruch zaworu 4D",
+        "state": {
+          "stop": "Stop",
+          "opening": "Otwieranie",
+          "closing": "Zamykanie"
         }
       }
     },
@@ -399,6 +462,92 @@
       },
       "water_temperature": {
         "name": "Temperatura kotła"
+      },
+      "boiler_reduction": {
+        "name": "Obniżenie temperatury kotła"
+      },
+      "boiler_curve_minus_10": {
+        "name": "Krzywa kotła dla -10°C"
+      },
+      "boiler_curve_plus_10": {
+        "name": "Krzywa kotła dla +10°C"
+      },
+      "dhw_reduction": {
+        "name": "Obniżenie temperatury CWU"
+      },
+      "dhw_hysteresis": {
+        "name": "Histereza CWU"
+      },
+      "dhw_priority_hysteresis": {
+        "name": "Histereza priorytetu CWU"
+      },
+      "buffer_hysteresis": {
+        "name": "Histereza bufora"
+      },
+      "mixing_valve_reduction": {
+        "name": "Obniżenie temperatury za zaworem"
+      },
+      "mixing_valve_curve_minus_10": {
+        "name": "Krzywa za zaworem dla -10°C"
+      },
+      "mixing_valve_curve_plus_10": {
+        "name": "Krzywa za zaworem dla +10°C"
+      },
+      "room_temperature_hysteresis": {
+        "name": "Histereza temperatury pokojowej"
+      },
+      "auto_summer_temperature": {
+        "name": "Temperatura zewnętrzna Auto-Lato"
+      },
+      "auto_summer_hysteresis": {
+        "name": "Histereza Auto-Lato"
+      },
+      "heating_pumps_start_temperature": {
+        "name": "Temperatura załączenia pomp CO"
+      }
+    },
+    "switch": {
+      "pump_1": {
+        "name": "Pompa 1"
+      },
+      "pump_2": {
+        "name": "Pompa 2"
+      },
+      "dhw_pump": {
+        "name": "Pompa CWU"
+      },
+      "auxiliary_pump": {
+        "name": "Pompa dodatkowa"
+      },
+      "buffer_pump": {
+        "name": "Pompa bufora"
+      },
+      "feeder": {
+        "name": "Podajnik"
+      },
+      "fan": {
+        "name": "Dmuchawa"
+      },
+      "auxiliary_output": {
+        "name": "Wyjście dodatkowe"
+      },
+      "exchanger_cleaning": {
+        "name": "Czyszczenie wymiennika"
+      },
+      "stoker": {
+        "name": "Sztoker"
+      },
+      "igniter": {
+        "name": "Grzałka"
+      },
+      "burner_cleaning": {
+        "name": "Czyszczenie palnika"
+      },
+      "boiler_weather_control": {
+        "name": "Regulator pogodowy kotła"
+      },
+      "mixing_valve_weather_control": {
+        "name": "Regulator pogodowy za zaworem"
       }
     }
   },

@@ -102,6 +102,9 @@ async def test_read_only_mode_swaps_controls_for_sensors_and_back(hass, controll
     assert hass.states.get("button.boiler_acknowledge_alarms") is None
     assert hass.states.get("sensor.boiler_setpoint").state == "65"
     assert hass.states.get("sensor.boiler_season_mode").state == "auto_summer"
+    assert hass.states.get("switch.boiler_pump_1") is None
+    assert hass.states.get("select.boiler_operating_mode") is None
+    assert hass.states.get("binary_sensor.boiler_pump_1").state == "off"
 
     hass.config_entries.async_update_entry(loaded, options={"read_only": False})
     await hass.config_entries.async_reload(loaded.entry_id)
@@ -109,6 +112,7 @@ async def test_read_only_mode_swaps_controls_for_sensors_and_back(hass, controll
 
     assert hass.states.get("number.boiler_setpoint").state == "65"
     assert hass.states.get("sensor.boiler_setpoint") is None
+    assert hass.states.get("switch.boiler_pump_1").state == "unavailable"
 
 
 async def test_entity_of_a_node_that_lost_its_pairing_is_kept(hass, controller, loaded):

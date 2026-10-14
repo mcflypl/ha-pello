@@ -347,16 +347,139 @@ async def test_controls_are_limited_to_the_reviewed_set(hass, loaded):
     assert sorted(controls) == [
         "button.boiler_acknowledge_alarms",
         "button.boiler_restart",
+        "number.boiler_auto_summer_hysteresis",
+        "number.boiler_auto_summer_temperature",
+        "number.boiler_boiler_curve_minus_10",
+        "number.boiler_boiler_curve_plus_10",
+        "number.boiler_boiler_reduction",
+        "number.boiler_buffer_hysteresis",
         "number.boiler_buffer_setpoint",
+        "number.boiler_dhw_hysteresis",
+        "number.boiler_dhw_priority_hysteresis",
+        "number.boiler_dhw_reduction",
         "number.boiler_dhw_setpoint",
+        "number.boiler_heating_pumps_start_temperature",
+        "number.boiler_mixing_valve_curve_minus_10",
+        "number.boiler_mixing_valve_curve_plus_10",
+        "number.boiler_mixing_valve_reduction",
         "number.boiler_mixing_valve_setpoint",
         "number.boiler_room_temperature_comfort",
+        "number.boiler_room_temperature_hysteresis",
         "number.boiler_room_temperature_low",
         "number.boiler_room_temperature_normal",
         "number.boiler_setpoint",
         "select.boiler_dhw_mode",
+        "select.boiler_mixing_valve_action",
+        "select.boiler_operating_mode",
         "select.boiler_season_mode",
+        "switch.boiler_auxiliary_output",
+        "switch.boiler_auxiliary_pump",
+        "switch.boiler_boiler_weather_control",
+        "switch.boiler_buffer_pump",
+        "switch.boiler_burner_cleaning",
+        "switch.boiler_dhw_pump",
+        "switch.boiler_exchanger_cleaning",
+        "switch.boiler_fan",
+        "switch.boiler_feeder",
+        "switch.boiler_igniter",
+        "switch.boiler_mixing_valve_weather_control",
+        "switch.boiler_pump_1",
+        "switch.boiler_pump_2",
+        "switch.boiler_stoker",
     ]
+
+
+# Regulation settings
+
+
+async def test_hysteresis_is_a_config_number_in_degrees(hass, controller, loaded):
+    state = hass.states.get("number.boiler_buffer_hysteresis")
+
+    assert state.state == "20"
+    assert state.attributes["unit_of_measurement"] == "°C"
+    assert "device_class" not in state.attributes
+    assert registry_entry(hass, "number.boiler_buffer_hysteresis").entity_category == "config"
+
+    controller.expect_write("device=0&tank_hist=15", write_response("tank_hist"))
+    await hass.services.async_call(
+        "number",
+        "set_value",
+        {"entity_id": "number.boiler_buffer_hysteresis", "value": 15},
+        blocking=True,
+    )
+
+    assert controller.writes == ["device=0&tank_hist=15"]
+
+
+async def test_weather_control_switch_is_available_in_automatic_mode(hass, controller, loaded):
+    assert hass.states.get("switch.boiler_mixing_valve_weather_control").state == "on"
+    controller.expect_write("device=0&ob1_pog_en=0", write_response("ob1_pog_en"))
+
+    await hass.services.async_call(
+        "switch",
+        "turn_off",
+        {"entity_id": "switch.boiler_mixing_valve_weather_control"},
+        blocking=True,
+    )
+
+    assert controller.writes == ["device=0&ob1_pog_en=0"]
+
+
+# Operating mode and manual control of power outputs
+
+
+async def test_operating_mode_select_follows_the_reported_state(hass, controller, loaded):
+    state = hass.states.get("select.boiler_operating_mode")
+    assert state.state == "automatic"
+    assert state.attributes["options"] == ["manual", "automatic"]
+
+    controller.set("tryb_auto_state", "2")
+    await refresh(hass, loaded)
+
+    assert hass.states.get("select.boiler_operating_mode").state == "unknown"
+    assert hass.states.get("sensor.boiler_operating_mode").state == "alarm"
+
+
+async def test_selecting_manual_mode_writes_the_mode_register(hass, controller, loaded):
+    controller.expect_write("device=0&tryb_auto=0", write_response("tryb_auto"))
+
+    await hass.services.async_call(
+        "select",
+        "select_option",
+        {"entity_id": "select.boiler_operating_mode", "option": "manual"},
+        blocking=True,
+    )
+
+    assert controller.writes == ["device=0&tryb_auto=0"]
+
+
+async def test_power_output_switches_are_unavailable_in_automatic_mode(hass, controller, loaded):
+    assert hass.states.get("switch.boiler_pump_1").state == "unavailable"
+    assert hass.states.get("select.boiler_mixing_valve_action").state == "unavailable"
+    assert hass.states.get("binary_sensor.boiler_pump_1").state == "off"
+
+    controller.set("tryb_auto_state", "0")
+    controller.set("out_pomp1", "1")
+    await refresh(hass, loaded)
+
+    assert hass.states.get("switch.boiler_pump_1").state == "on"
+    assert hass.states.get("select.boiler_mixing_valve_action").state == "stop"
+
+
+async def test_power_output_switch_writes_the_output(hass, controller, loaded):
+    controller.set("tryb_auto_state", "0")
+    await refresh(hass, loaded)
+    controller.expect_write("device=0&out_dm=1", write_response("out_dm"))
+    controller.expect_write("device=0&out_dm=0", write_response("out_dm"))
+
+    await hass.services.async_call(
+        "switch", "turn_on", {"entity_id": "switch.boiler_fan"}, blocking=True
+    )
+    await hass.services.async_call(
+        "switch", "turn_off", {"entity_id": "switch.boiler_fan"}, blocking=True
+    )
+
+    assert controller.writes == ["device=0&out_dm=1", "device=0&out_dm=0"]
 
 
 async def test_room_heating_demand_follows_the_undocumented_room_regulator_register(

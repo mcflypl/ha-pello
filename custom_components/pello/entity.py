@@ -7,7 +7,8 @@ import re
 
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from .catalog import EntitySpec
+from .catalog import OPERATING_MODE_MANUAL, OPERATING_MODE_TID, EntitySpec
+from .const import MAIN_VID
 from .coordinator import PelloCoordinator
 from .models import RegisterDef
 
@@ -46,12 +47,18 @@ class PelloEntity(CoordinatorEntity[PelloCoordinator]):
     @property
     def available(self) -> bool:
         """Radio nodes keep their last value on the controller after they go silent."""
-        return super().available and not self.coordinator.is_stale(self._vid)
+        if not super().available or self.coordinator.is_stale(self._vid):
+            return False
+        if self._spec.curated is not None and self._spec.curated.manual_only:
+            return (
+                self.coordinator.data.value(MAIN_VID, OPERATING_MODE_TID) == OPERATING_MODE_MANUAL
+            )
+        return True
 
     @property
     def raw(self) -> str | None:
         """Raw register value; None when the controller reports nothing."""
-        return self.coordinator.data.value(self._vid, self._register.tid)
+        return self.coordinator.data.value(self._vid, self._spec.state_tid)
 
     @property
     def unit(self) -> str | None:

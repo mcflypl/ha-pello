@@ -32,7 +32,7 @@ with the settings that can be changed and the sensors.
   alarm messages come from the device, in English or Polish.
 - About 100 entities enabled out of the box, with stable English entity ids.
 - Every other register is available as a disabled sensor you can switch on when you need it.
-- Setpoints and modes can be changed, and refuels recorded with an action; everything that could harm the installation is read-only.
+- Setpoints and modes can be changed, refuels recorded with an action, and power outputs switched by hand in manual mode; burner tuning and installation settings are read-only.
 - One binary sensor per alarm, plus a summary sensor listing every active alarm.
 - Reauthentication, reconfiguration (new address), diagnostics, read-only mode.
 
@@ -134,17 +134,38 @@ grant to the account:
 | Buffer setpoint | `tank_tzad` |
 | Mixing valve setpoint | `ob1_tzad` |
 | Room temperature low / normal / comfort | `ob1_pok_lo`, `ob1_pok_norm`, `ob1_pok_hi` |
+| Boiler reduction, weather control and curve at −10 °C / +10 °C | `kot_tobn`, `pog_en`, `pog_krzyw1`, `pog_krzyw2` |
+| Hot water reduction, hysteresis and priority hysteresis | `cwu_tobn`, `cwu_hist1`, `cwu_hist2` |
+| Buffer hysteresis | `tank_hist` |
+| Mixing valve reduction, weather control and curve at −10 °C / +10 °C | `ob1_tobn`, `ob1_pog_en`, `ob1_pog_krzyw1`, `ob1_pog_krzyw2` |
+| Room temperature hysteresis | `ob1_pok_hist` |
+| Auto summer outdoor temperature and hysteresis | `autolato_tzew`, `autolato_hist` |
+| Heating pumps start temperature | `pomp_co_ton` |
+| Operating mode (manual, automatic) | `tryb_auto`, state read from `tryb_auto_state` |
 | Season mode (winter, summer, auto summer) | `zima_lato` |
 | Hot water mode (off, schedule, on, +1 h, +2 h) | `cwu_state` |
 | Acknowledge alarms | `cmd_ackalarm` |
 | Restart (disabled by default) | `cmd_reset` |
 | Action `pello.add_fuel` (refuel) | `add_fuel` |
+| Power output switches, manual mode only | `out_pomp1`, `out_pomp2`, `out_cwu`, `out_miesz`, `out_tank`, `out_pod`, `out_dm`, `out_aux`, `out_clean_wym`, `mpl_feed`, `mpl_heat`, `mpl_clean` |
+| Mixing valve action (stop, opening, closing), manual mode only | `out_zaw4d` |
 
-Values are limited to the range and step the controller declares.
+Values are limited to the range and step the controller declares. Regulation settings (reductions,
+hysteresis, curves, thresholds) are configuration entities; hysteresis and reductions are
+temperature differences, so they carry °C without the temperature device class and are never
+converted like an absolute temperature.
 
-The controller would also accept writes that force a pump, the feeder or the igniter, switch to
-manual mode, change the boiler model or retune the burner. None of that is offered: a mistake
-there can damage the installation. The list lives in `CURATED` in
+### Manual mode
+
+Manual mode stops the burner, and the controller stops driving its outputs: no pump, valve or
+feeder runs until you switch it, so neither the house nor hot water is heated. The output
+switches and the mixing valve select are unavailable in any other mode; their binary sensors and
+the mixing valve action sensor keep reporting the outputs all the time. Running the feeder or the
+igniter without supervision can overfill or overheat the burner, so switch them only while
+watching the boiler, then go back to automatic mode.
+
+The controller would also accept writes that change the boiler model or retune the burner. None
+of that is offered: a mistake there can damage the installation. The list lives in `CURATED` in
 [`catalog.py`](custom_components/pello/catalog.py) and a test pins it, so adding a control is
 always a deliberate change.
 

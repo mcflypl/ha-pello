@@ -116,6 +116,12 @@
       },
       "alarm": {
         "name": "Alarm"
+      },
+      "boiler_weather_control": {
+        "name": "Boiler weather control"
+      },
+      "mixing_valve_weather_control": {
+        "name": "Mixing valve weather control"
       }
     },
     "button": {
@@ -147,6 +153,48 @@
       },
       "room_temperature_comfort": {
         "name": "Room temperature comfort"
+      },
+      "boiler_reduction": {
+        "name": "Boiler reduction"
+      },
+      "boiler_curve_minus_10": {
+        "name": "Boiler curve at -10 °C"
+      },
+      "boiler_curve_plus_10": {
+        "name": "Boiler curve at +10 °C"
+      },
+      "dhw_reduction": {
+        "name": "Hot water reduction"
+      },
+      "dhw_hysteresis": {
+        "name": "Hot water hysteresis"
+      },
+      "dhw_priority_hysteresis": {
+        "name": "Hot water priority hysteresis"
+      },
+      "buffer_hysteresis": {
+        "name": "Buffer hysteresis"
+      },
+      "mixing_valve_reduction": {
+        "name": "Mixing valve reduction"
+      },
+      "mixing_valve_curve_minus_10": {
+        "name": "Mixing valve curve at -10 °C"
+      },
+      "mixing_valve_curve_plus_10": {
+        "name": "Mixing valve curve at +10 °C"
+      },
+      "room_temperature_hysteresis": {
+        "name": "Room temperature hysteresis"
+      },
+      "auto_summer_temperature": {
+        "name": "Auto summer outdoor temperature"
+      },
+      "auto_summer_hysteresis": {
+        "name": "Auto summer hysteresis"
+      },
+      "heating_pumps_start_temperature": {
+        "name": "Heating pumps start temperature"
       }
     },
     "select": {
@@ -166,6 +214,21 @@
           "on": "On",
           "plus_1h": "On for 1 hour",
           "plus_2h": "On for 2 hours"
+        }
+      },
+      "operating_mode": {
+        "name": "Operating mode",
+        "state": {
+          "manual": "Manual",
+          "automatic": "Automatic"
+        }
+      },
+      "mixing_valve_action": {
+        "name": "Mixing valve action",
+        "state": {
+          "stop": "Stopped",
+          "opening": "Opening",
+          "closing": "Closing"
         }
       }
     },
@@ -399,6 +462,92 @@
       },
       "water_temperature": {
         "name": "Water temperature"
+      },
+      "boiler_reduction": {
+        "name": "Boiler reduction"
+      },
+      "boiler_curve_minus_10": {
+        "name": "Boiler curve at -10 °C"
+      },
+      "boiler_curve_plus_10": {
+        "name": "Boiler curve at +10 °C"
+      },
+      "dhw_reduction": {
+        "name": "Hot water reduction"
+      },
+      "dhw_hysteresis": {
+        "name": "Hot water hysteresis"
+      },
+      "dhw_priority_hysteresis": {
+        "name": "Hot water priority hysteresis"
+      },
+      "buffer_hysteresis": {
+        "name": "Buffer hysteresis"
+      },
+      "mixing_valve_reduction": {
+        "name": "Mixing valve reduction"
+      },
+      "mixing_valve_curve_minus_10": {
+        "name": "Mixing valve curve at -10 °C"
+      },
+      "mixing_valve_curve_plus_10": {
+        "name": "Mixing valve curve at +10 °C"
+      },
+      "room_temperature_hysteresis": {
+        "name": "Room temperature hysteresis"
+      },
+      "auto_summer_temperature": {
+        "name": "Auto summer outdoor temperature"
+      },
+      "auto_summer_hysteresis": {
+        "name": "Auto summer hysteresis"
+      },
+      "heating_pumps_start_temperature": {
+        "name": "Heating pumps start temperature"
+      }
+    },
+    "switch": {
+      "pump_1": {
+        "name": "Pump 1"
+      },
+      "pump_2": {
+        "name": "Pump 2"
+      },
+      "dhw_pump": {
+        "name": "Hot water pump"
+      },
+      "auxiliary_pump": {
+        "name": "Auxiliary pump"
+      },
+      "buffer_pump": {
+        "name": "Buffer pump"
+      },
+      "feeder": {
+        "name": "Feeder"
+      },
+      "fan": {
+        "name": "Fan"
+      },
+      "auxiliary_output": {
+        "name": "Auxiliary output"
+      },
+      "exchanger_cleaning": {
+        "name": "Exchanger cleaning"
+      },
+      "stoker": {
+        "name": "Stoker"
+      },
+      "igniter": {
+        "name": "Igniter"
+      },
+      "burner_cleaning": {
+        "name": "Burner cleaning"
+      },
+      "boiler_weather_control": {
+        "name": "Boiler weather control"
+      },
+      "mixing_valve_weather_control": {
+        "name": "Mixing valve weather control"
       }
     }
   },

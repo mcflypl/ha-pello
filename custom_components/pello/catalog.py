@@ -37,7 +37,10 @@ ROOM_DEVICE_TYPE = "bero.room"
 
 # Only curated entries of these platforms can change the controller. Every other
 # register is read-only here, whatever access the controller itself would grant.
-CONTROL_PLATFORMS = frozenset({Platform.NUMBER, Platform.SELECT, Platform.BUTTON})
+CONTROL_PLATFORMS = frozenset({Platform.NUMBER, Platform.SELECT, Platform.BUTTON, Platform.SWITCH})
+
+OPERATING_MODE_TID = "tryb_auto_state"
+OPERATING_MODE_MANUAL = "0"
 
 SECONDS_PER_HOUR = 3600
 
@@ -64,6 +67,10 @@ class Curated:
     resolution: int | None = None
     enabled: bool = True
     category: EntityCategory | None = None
+    # Register that reports the current value of a setting the controller accepts but never reports.
+    state_register: str | None = None
+    # Power outputs obey only while the controller is in manual mode.
+    manual_only: bool = False
 
 
 @dataclass(frozen=True, slots=True)
@@ -81,6 +88,13 @@ class EntitySpec:
     def key(self) -> str:
         """Stable key used for the entity id and translations."""
         return self.curated.key if self.curated else self.register.tid
+
+    @property
+    def state_tid(self) -> str:
+        """Register holding the current value of the entity."""
+        if self.curated is not None and self.curated.state_register:
+            return self.curated.state_register
+        return self.register.tid
 
 
 def _temperature(key: str, **kwargs) -> Curated:
@@ -115,8 +129,30 @@ def _input(key: str, **kwargs) -> Curated:
     return Curated(key=key, platform=Platform.BINARY_SENSOR, **kwargs)
 
 
+def _manual_switch(key: str) -> Curated:
+    return Curated(key=key, platform=Platform.SWITCH, manual_only=True)
+
+
 def _setpoint(key: str) -> Curated:
     return Curated(key=key, platform=Platform.NUMBER, device_class=NumberDeviceClass.TEMPERATURE)
+
+
+def _setting(key: str) -> Curated:
+    return Curated(
+        key=key,
+        platform=Platform.NUMBER,
+        device_class=NumberDeviceClass.TEMPERATURE,
+        category=EntityCategory.CONFIG,
+    )
+
+
+def _difference(key: str) -> Curated:
+    # A temperature device class would convert a difference like an absolute temperature.
+    return Curated(key=key, platform=Platform.NUMBER, unit="°C", category=EntityCategory.CONFIG)
+
+
+def _toggle(key: str) -> Curated:
+    return Curated(key=key, platform=Platform.SWITCH, category=EntityCategory.CONFIG)
 
 
 BURNER_STATUS = {
@@ -265,6 +301,30 @@ CURATED: Mapping[str, Curated] = {
     "ob1_pok_lo": _setpoint("room_temperature_low"),
     "ob1_pok_norm": _setpoint("room_temperature_normal"),
     "ob1_pok_hi": _setpoint("room_temperature_comfort"),
+    # Regulation settings
+    "kot_tobn": _difference("boiler_reduction"),
+    "pog_en": _toggle("boiler_weather_control"),
+    "pog_krzyw1": _setting("boiler_curve_minus_10"),
+    "pog_krzyw2": _setting("boiler_curve_plus_10"),
+    "cwu_tobn": _difference("dhw_reduction"),
+    "cwu_hist1": _difference("dhw_hysteresis"),
+    "cwu_hist2": _difference("dhw_priority_hysteresis"),
+    "tank_hist": _difference("buffer_hysteresis"),
+    "ob1_tobn": _difference("mixing_valve_reduction"),
+    "ob1_pog_en": _toggle("mixing_valve_weather_control"),
+    "ob1_pog_krzyw1": _setting("mixing_valve_curve_minus_10"),
+    "ob1_pog_krzyw2": _setting("mixing_valve_curve_plus_10"),
+    "ob1_pok_hist": _difference("room_temperature_hysteresis"),
+    "autolato_tzew": _setting("auto_summer_temperature"),
+    "autolato_hist": _difference("auto_summer_hysteresis"),
+    "pomp_co_ton": _setting("heating_pumps_start_temperature"),
+    # Manual mode stops the burner and hands the power outputs over to MANUAL_CONTROLS.
+    "tryb_auto": Curated(
+        key="operating_mode",
+        platform=Platform.SELECT,
+        options={"0": "manual", "1": "automatic"},
+        state_register="tryb_auto_state",
+    ),
     "zima_lato": Curated(
         key="season_mode",
         platform=Platform.SELECT,
@@ -278,6 +338,29 @@ CURATED: Mapping[str, Curated] = {
     "cmd_ackalarm": Curated(key="acknowledge_alarms", platform=Platform.BUTTON),
     "cmd_reset": Curated(
         key="restart", platform=Platform.BUTTON, enabled=False, category=EntityCategory.CONFIG
+    ),
+}
+
+# Power outputs switched by hand in manual mode. They also stay binary sensors (in CURATED), which
+# report the outputs in every mode.
+MANUAL_CONTROLS: Mapping[str, Curated] = {
+    "out_pomp1": _manual_switch("pump_1"),
+    "out_pomp2": _manual_switch("pump_2"),
+    "out_cwu": _manual_switch("dhw_pump"),
+    "out_miesz": _manual_switch("auxiliary_pump"),
+    "out_tank": _manual_switch("buffer_pump"),
+    "out_pod": _manual_switch("feeder"),
+    "out_dm": _manual_switch("fan"),
+    "out_aux": _manual_switch("auxiliary_output"),
+    "out_clean_wym": _manual_switch("exchanger_cleaning"),
+    "mpl_feed": _manual_switch("stoker"),
+    "mpl_heat": _manual_switch("igniter"),
+    "mpl_clean": _manual_switch("burner_cleaning"),
+    "out_zaw4d": Curated(
+        key="mixing_valve_action",
+        platform=Platform.SELECT,
+        options={"0": "stop", "1": "opening", "2": "closing"},
+        manual_only=True,
     ),
 }
 
@@ -340,7 +423,7 @@ def _fits(register: RegisterDef, curated: Curated) -> bool:
     if curated.platform is Platform.SELECT or curated.options is not None:
         known = {option.id for option in register.options}
         return register.type == TYPE_ENUM and set(curated.options or ()) <= known
-    if curated.platform is Platform.BINARY_SENSOR:
+    if curated.platform in (Platform.BINARY_SENSOR, Platform.SWITCH):
         return register.type == TYPE_ENUM
     if curated.device_class == SensorDeviceClass.TIMESTAMP:
         return register.type == TYPE_TIMESTAMP
@@ -351,11 +434,11 @@ def _as_sensor(curated: Curated) -> Curated:
     """Present a setting that may not be changed as a sensor under the same key."""
     if curated.platform is Platform.SELECT:
         return replace(curated, platform=Platform.SENSOR, device_class=SensorDeviceClass.ENUM)
+    if curated.platform is Platform.SWITCH:
+        return replace(curated, platform=Platform.BINARY_SENSOR)
+    device_class = SensorDeviceClass(curated.device_class) if curated.device_class else None
     return replace(
-        curated,
-        platform=Platform.SENSOR,
-        device_class=TEMPERATURE,
-        state_class=MEASUREMENT,
+        curated, platform=Platform.SENSOR, device_class=device_class, state_class=MEASUREMENT
     )
 
 
@@ -391,6 +474,9 @@ def _spec(
         if read_only or access != ACCESS_EXECUTE:
             return None
     elif curated.platform in CONTROL_PLATFORMS and (read_only or access != ACCESS_WRITE):
+        if curated.state_register or curated.manual_only:
+            # The value is already shown by a sensor of its own.
+            return None
         curated = _as_sensor(curated)
 
     return EntitySpec(vid, register, curated.platform, curated, curated.enabled, curated.category)
@@ -428,14 +514,20 @@ def build_specs(
     for tid, register in registers.items():
         if tid in EXCLUDED or tid.startswith(EXCLUDED_PREFIXES):
             continue
+        curated = CURATED.get(tid)
+        reported = curated.state_register if curated and curated.state_register else tid
         # Commands have no value, every other register must actually be reported.
-        if register.type != TYPE_COMMAND and tid not in controller:
+        if register.type != TYPE_COMMAND and reported not in controller:
             continue
         if not _circuit_active(tid, snapshot):
             continue
-        spec = _spec(MAIN_VID, register, CURATED.get(tid), access_level, read_only)
+        spec = _spec(MAIN_VID, register, curated, access_level, read_only)
         if spec is not None:
             specs.append(spec)
+        if (control := MANUAL_CONTROLS.get(tid)) and _fits(register, control):
+            spec = _spec(MAIN_VID, register, control, access_level, read_only)
+            if spec is not None:
+                specs.append(spec)
 
     for vid in active_nodes(dictionary, snapshot):
         values = snapshot.devices[vid].values

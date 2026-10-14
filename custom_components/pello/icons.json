@@ -97,11 +97,105 @@
       },
       "dhw_mode": {
         "default": "mdi:water-boiler"
+      },
+      "operating_mode": {
+        "default": "mdi:cog-play"
+      },
+      "mixing_valve_action": {
+        "default": "mdi:valve"
       }
     },
     "button": {
       "acknowledge_alarms": {
         "default": "mdi:bell-check"
+      }
+    },
+    "switch": {
+      "pump_1": {
+        "default": "mdi:pump"
+      },
+      "pump_2": {
+        "default": "mdi:pump"
+      },
+      "dhw_pump": {
+        "default": "mdi:pump"
+      },
+      "auxiliary_pump": {
+        "default": "mdi:pump"
+      },
+      "buffer_pump": {
+        "default": "mdi:pump"
+      },
+      "feeder": {
+        "default": "mdi:screw-lag"
+      },
+      "stoker": {
+        "default": "mdi:screw-lag"
+      },
+      "fan": {
+        "default": "mdi:fan"
+      },
+      "auxiliary_output": {
+        "default": "mdi:power-socket-eu"
+      },
+      "exchanger_cleaning": {
+        "default": "mdi:broom"
+      },
+      "igniter": {
+        "default": "mdi:heating-coil"
+      },
+      "burner_cleaning": {
+        "default": "mdi:broom"
+      },
+      "boiler_weather_control": {
+        "default": "mdi:weather-partly-snowy"
+      },
+      "mixing_valve_weather_control": {
+        "default": "mdi:weather-partly-snowy"
+      }
+    },
+    "number": {
+      "boiler_reduction": {
+        "default": "mdi:thermometer-minus"
+      },
+      "dhw_reduction": {
+        "default": "mdi:thermometer-minus"
+      },
+      "mixing_valve_reduction": {
+        "default": "mdi:thermometer-minus"
+      },
+      "dhw_hysteresis": {
+        "default": "mdi:arrow-expand-vertical"
+      },
+      "dhw_priority_hysteresis": {
+        "default": "mdi:arrow-expand-vertical"
+      },
+      "buffer_hysteresis": {
+        "default": "mdi:arrow-expand-vertical"
+      },
+      "room_temperature_hysteresis": {
+        "default": "mdi:arrow-expand-vertical"
+      },
+      "auto_summer_hysteresis": {
+        "default": "mdi:arrow-expand-vertical"
+      },
+      "boiler_curve_minus_10": {
+        "default": "mdi:chart-bell-curve-cumulative"
+      },
+      "boiler_curve_plus_10": {
+        "default": "mdi:chart-bell-curve-cumulative"
+      },
+      "mixing_valve_curve_minus_10": {
+        "default": "mdi:chart-bell-curve-cumulative"
+      },
+      "mixing_valve_curve_plus_10": {
+        "default": "mdi:chart-bell-curve-cumulative"
+      },
+      "auto_summer_temperature": {
+        "default": "mdi:sun-thermometer"
+      },
+      "heating_pumps_start_temperature": {
+        "default": "mdi:pump"
       }
     }
   },
