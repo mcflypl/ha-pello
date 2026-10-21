@@ -17,12 +17,12 @@ zmieniać wybrane nastawy. Nazwy encji i stanów są przetłumaczone na polski.
 ## Screenshots
 
 <p>
-  <a href="docs/dashboard.png"><img src="docs/dashboard-thumb.png" width="400" alt="Example dashboard with boiler, burner, fuel, hot water and heating sections"></a>
-  <a href="docs/device.png"><img src="docs/device-thumb.png" width="400" alt="Device page of the controller in Home Assistant"></a>
+  <a href="https://raw.githubusercontent.com/mcflypl/ha-pello/main/docs/dashboard.png"><img src="https://raw.githubusercontent.com/mcflypl/ha-pello/main/docs/dashboard-thumb.png" width="400" alt="Example dashboard with boiler, burner, fuel, hot water and heating sections"></a>
+  <a href="https://raw.githubusercontent.com/mcflypl/ha-pello/main/docs/device.png"><img src="https://raw.githubusercontent.com/mcflypl/ha-pello/main/docs/device-thumb.png" width="400" alt="Device page of the controller in Home Assistant"></a>
 </p>
 
 Click a thumbnail for the full image. Left: an example dashboard, shown with a custom theme — its
-configuration is in [`examples/dashboard.yaml`](examples/dashboard.yaml). Right: the device page
+configuration is in [`examples/dashboard.yaml`](https://github.com/mcflypl/ha-pello/blob/main/examples/dashboard.yaml). Right: the device page
 with the settings that can be changed and the sensors.
 
 ## Features
@@ -178,7 +178,7 @@ watching the boiler, then go back to automatic mode.
 
 The controller would also accept writes that change the boiler model or retune the burner. None
 of that is offered: a mistake there can damage the installation. The list lives in `CURATED` in
-[`catalog.py`](custom_components/pello/catalog.py) and a test pins it, so adding a control is
+[`catalog.py`](https://github.com/mcflypl/ha-pello/blob/main/custom_components/pello/catalog.py) and a test pins it, so adding a control is
 always a deliberate change.
 
 The integration writes only when you change a number or a select, press a button or run an
@@ -279,4 +279,4 @@ GitHub release with the changelog section as its notes. HACS offers that release
 
 ## License
 
-[Apache License 2.0](LICENSE).
+[Apache License 2.0](https://github.com/mcflypl/ha-pello/blob/main/LICENSE).
