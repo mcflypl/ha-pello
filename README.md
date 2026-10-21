@@ -54,6 +54,18 @@ Requires Home Assistant 2026.9 or newer.
 
 ### HACS
 
+Pello is available in the default [HACS](https://hacs.xyz/) store.
+
+[![Open your Home Assistant instance and open the repository inside HACS.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=mcflypl&repository=ha-pello&category=integration)
+
+1. In HACS, search for **Pello** (or use the button above).
+2. Download it and restart Home Assistant.
+
+### HACS custom repository (fallback)
+
+If Pello does not show up in the HACS search, for example on an older HACS whose store list has
+not refreshed yet, add the repository by hand:
+
 1. HACS → menu → **Custom repositories** → add `https://github.com/mcflypl/ha-pello` as an
    *Integration*.
 2. Install **Pello** and restart Home Assistant.
