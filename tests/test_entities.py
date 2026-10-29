@@ -190,6 +190,42 @@ async def test_alarm_summary_lists_active_alarms(hass, controller, loaded):
     assert any("Safety temperature limiter" in entry for entry in state.attributes["active"])
 
 
+async def test_exchanger_cleaning_alarm_says_how_much_was_burnt(hass, controller, loaded):
+    alarm = "binary_sensor.boiler_exchanger_cleaning_due"
+    assert hass.states.get(alarm).state == "off"
+
+    controller.set("alarm_clean_exch", "1")
+    controller.set("clean_act_kg", "503.06")
+    await refresh(hass, loaded)
+
+    state = hass.states.get(alarm)
+    assert state.state == "on"
+    assert state.name == "Boiler Exchanger cleaning due"
+    assert state.attributes["pellets_since_cleaning"] == 503.06
+    assert state.attributes["cleaning_interval"] == 500
+    message = (
+        "The set amount of pellets has been burnt: clean the heat exchanger,"
+        " then acknowledge the alarms to reset the counter"
+    )
+    assert state.attributes["messages"] == [message]
+    summary = hass.states.get("binary_sensor.boiler_alarm").attributes["active"]
+    assert summary == [f"Exchanger cleaning due: {message}"]
+
+
+async def test_exchanger_cleaning_alarm_is_translated(hass, controller, entry):
+    hass.config.language = "pl"
+    controller.set("alarm_clean_exch", "1")
+    await hass.config_entries.async_setup(entry.entry_id)
+    await hass.async_block_till_done()
+
+    summary = hass.states.get("binary_sensor.boiler_alarm").attributes["active"]
+
+    assert summary == [
+        "Wymiennik do wyczyszczenia: Spalono ustawioną ilość pelletu: wyczyść wymiennik"
+        " i potwierdź alarmy, aby wyzerować licznik"
+    ]
+
+
 # Numbers
 
 
@@ -358,6 +394,7 @@ async def test_controls_are_limited_to_the_reviewed_set(hass, loaded):
         "number.boiler_dhw_priority_hysteresis",
         "number.boiler_dhw_reduction",
         "number.boiler_dhw_setpoint",
+        "number.boiler_exchanger_cleaning_interval",
         "number.boiler_heating_pumps_start_temperature",
         "number.boiler_mixing_valve_curve_minus_10",
         "number.boiler_mixing_valve_curve_plus_10",

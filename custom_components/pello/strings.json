@@ -114,6 +114,34 @@
       "room_heating_demand": {
         "name": "Room heating demand"
       },
+      "exchanger_cleaning_due": {
+        "name": "Exchanger cleaning due",
+        "state_attributes": {
+          "messages": {
+            "name": "Messages",
+            "state": {
+              "clean_exchanger": "The set amount of pellets has been burnt: clean the heat exchanger, then acknowledge the alarms to reset the counter"
+            }
+          },
+          "pellets_since_cleaning": {
+            "name": "Pellets since cleaning"
+          },
+          "cleaning_interval": {
+            "name": "Cleaning interval"
+          }
+        }
+      },
+      "exchanger_cleaning_mechanism_lock": {
+        "name": "Exchanger cleaning mechanism lock",
+        "state_attributes": {
+          "messages": {
+            "name": "Messages",
+            "state": {
+              "mechanism_locked": "The exchanger cleaning mechanism is blocked"
+            }
+          }
+        }
+      },
       "alarm": {
         "name": "Alarm"
       },
@@ -195,6 +223,9 @@
       },
       "heating_pumps_start_temperature": {
         "name": "Heating pumps start temperature"
+      },
+      "exchanger_cleaning_interval": {
+        "name": "Exchanger cleaning interval"
       }
     },
     "select": {

@@ -1,5 +1,7 @@
 """Tests for the rules turning registers into entities."""
 
+from dataclasses import replace
+
 import pytest
 from homeassistant.const import EntityCategory, Platform
 
@@ -110,6 +112,7 @@ def test_only_reviewed_registers_can_change_the_controller(dictionary, snapshot)
         "autolato_tzew": Platform.NUMBER,
         "autolato_hist": Platform.NUMBER,
         "pomp_co_ton": Platform.NUMBER,
+        "clean_exch_kg": Platform.NUMBER,
         "tryb_auto": Platform.SELECT,
         "zima_lato": Platform.SELECT,
         "cwu_state": Platform.SELECT,
@@ -217,6 +220,41 @@ def test_alarm_is_an_enabled_diagnostic_binary_sensor(dictionary, snapshot):
     assert spec.platform is Platform.BINARY_SENSOR
     assert spec.enabled
     assert spec.category is EntityCategory.DIAGNOSTIC
+
+
+def test_curated_alarm_keeps_its_bits(dictionary, snapshot):
+    spec = specs_by_tid(dictionary, snapshot)["alarm_clean_exch"]
+
+    assert spec.platform is Platform.BINARY_SENSOR
+    assert spec.key == "exchanger_cleaning_due"
+    assert spec.category is EntityCategory.DIAGNOSTIC
+
+
+def test_curated_alarm_with_unknown_bit_falls_back_to_the_dictionary(dictionary, snapshot):
+    register = dictionary.registers_for(0)["alarm_clean_exch"]
+    changed = replace(register, options=())
+    patched = replace(
+        dictionary,
+        registers={
+            idt: {**regs, "alarm_clean_exch": changed} if "alarm_clean_exch" in regs else regs
+            for idt, regs in dictionary.registers.items()
+        },
+    )
+
+    spec = specs_by_tid(patched, snapshot)["alarm_clean_exch"]
+
+    assert spec.curated is None
+    assert spec.platform is Platform.BINARY_SENSOR
+
+
+def test_exchanger_cleaning_interval_is_a_setting(dictionary, snapshot):
+    spec = specs_by_tid(dictionary, snapshot)["clean_exch_kg"]
+
+    assert spec.platform is Platform.NUMBER
+    assert spec.category is EntityCategory.CONFIG
+    assert specs_by_tid(dictionary, snapshot, read_only=True)["clean_exch_kg"].platform is (
+        Platform.SENSOR
+    )
 
 
 def test_credentials_identity_and_network_never_become_entities(dictionary, snapshot):

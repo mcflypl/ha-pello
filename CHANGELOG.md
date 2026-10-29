@@ -5,6 +5,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+
+- Exchanger cleaning interval setting (`clean_exch_kg`, kilograms of pellets between cleanings).
+
+### Changed
+
+- The exchanger cleaning alarm (`alarm_clean_exch`) is named "Exchanger cleaning due", shows the
+  pellets burnt since cleaning and the interval as attributes, and its message, translated instead
+  of the controller's Polish-only label, says that acknowledging the alarms resets the counter.
+  New installations get the entity id `binary_sensor.<device>_exchanger_cleaning_due`; existing
+  ones keep theirs.
+- The cleaning mechanism alarm (`alarm_clwym`) is named "Exchanger cleaning mechanism lock"
+  instead of sharing the name of the exchanger cleaning output.
+
 ## [1.3.0] - 2026-10-15
 
 ### Added

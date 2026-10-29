@@ -61,7 +61,7 @@ class Curated:
     state_class: SensorStateClass | None = None
     unit: str | None = None
     suggested_unit: str | None = None
-    # Raw option id -> stable state, so automations do not depend on the UI language.
+    # Raw option id (or alarm bit) -> stable state, so automations do not depend on the UI language.
     options: Mapping[str, str] | None = None
     # Timestamps are rounded to this many seconds.
     resolution: int | None = None
@@ -71,6 +71,8 @@ class Curated:
     state_register: str | None = None
     # Power outputs obey only while the controller is in manual mode.
     manual_only: bool = False
+    # Attribute -> register shown with the entity.
+    attributes: Mapping[str, str] | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -127,6 +129,16 @@ def _output(key: str) -> Curated:
 
 def _input(key: str, **kwargs) -> Curated:
     return Curated(key=key, platform=Platform.BINARY_SENSOR, **kwargs)
+
+
+def _alarm(key: str, messages: Mapping[str, str], **kwargs) -> Curated:
+    return Curated(
+        key=key,
+        platform=Platform.BINARY_SENSOR,
+        options=messages,
+        category=EntityCategory.DIAGNOSTIC,
+        **kwargs,
+    )
 
 
 def _manual_switch(key: str) -> Curated:
@@ -293,6 +305,13 @@ CURATED: Mapping[str, Curated] = {
     "di_zas": _input("hopper_sensor"),
     "di_alarm": _input("external_alarm_input"),
     "ob1_pok_heat": _input("room_heating_demand"),
+    # The controller labels the first alarm in Polish only, the second like the cleaning output.
+    "alarm_clean_exch": _alarm(
+        "exchanger_cleaning_due",
+        {"1": "clean_exchanger"},
+        attributes={"pellets_since_cleaning": "clean_act_kg", "cleaning_interval": "clean_exch_kg"},
+    ),
+    "alarm_clwym": _alarm("exchanger_cleaning_mechanism_lock", {"1": "mechanism_locked"}),
     # Control
     "kot_tzad": _setpoint("setpoint"),
     "cwu_tzad": _setpoint("dhw_setpoint"),
@@ -318,6 +337,12 @@ CURATED: Mapping[str, Curated] = {
     "autolato_tzew": _setting("auto_summer_temperature"),
     "autolato_hist": _difference("auto_summer_hysteresis"),
     "pomp_co_ton": _setting("heating_pumps_start_temperature"),
+    "clean_exch_kg": Curated(
+        key="exchanger_cleaning_interval",
+        platform=Platform.NUMBER,
+        device_class=NumberDeviceClass.WEIGHT,
+        category=EntityCategory.CONFIG,
+    ),
     # Manual mode stops the burner and hands the power outputs over to MANUAL_CONTROLS.
     "tryb_auto": Curated(
         key="operating_mode",
@@ -422,7 +447,9 @@ def _fits(register: RegisterDef, curated: Curated) -> bool:
         return register.type in NUMERIC_TYPES and has_range
     if curated.platform is Platform.SELECT or curated.options is not None:
         known = {option.id for option in register.options}
-        return register.type == TYPE_ENUM and set(curated.options or ()) <= known
+        # Options of a binary sensor name the bits of an alarm.
+        expected = TYPE_ALARM if curated.platform is Platform.BINARY_SENSOR else TYPE_ENUM
+        return register.type == expected and set(curated.options or ()) <= known
     if curated.platform in (Platform.BINARY_SENSOR, Platform.SWITCH):
         return register.type == TYPE_ENUM
     if curated.device_class == SensorDeviceClass.TIMESTAMP:

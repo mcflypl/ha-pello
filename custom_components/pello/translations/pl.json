@@ -114,6 +114,34 @@
       "room_heating_demand": {
         "name": "Zapotrzebowanie na ciepło w pomieszczeniu"
       },
+      "exchanger_cleaning_due": {
+        "name": "Wymiennik do wyczyszczenia",
+        "state_attributes": {
+          "messages": {
+            "name": "Komunikaty",
+            "state": {
+              "clean_exchanger": "Spalono ustawioną ilość pelletu: wyczyść wymiennik i potwierdź alarmy, aby wyzerować licznik"
+            }
+          },
+          "pellets_since_cleaning": {
+            "name": "Pellet od czyszczenia"
+          },
+          "cleaning_interval": {
+            "name": "Czyszczenie co"
+          }
+        }
+      },
+      "exchanger_cleaning_mechanism_lock": {
+        "name": "Blokada mechanizmu czyszczenia wymiennika",
+        "state_attributes": {
+          "messages": {
+            "name": "Komunikaty",
+            "state": {
+              "mechanism_locked": "Mechanizm czyszczenia wymiennika jest zablokowany"
+            }
+          }
+        }
+      },
       "alarm": {
         "name": "Alarm"
       },
@@ -195,6 +223,9 @@
       },
       "heating_pumps_start_temperature": {
         "name": "Temperatura załączenia pomp CO"
+      },
+      "exchanger_cleaning_interval": {
+        "name": "Czyszczenie wymiennika co"
       }
     },
     "select": {

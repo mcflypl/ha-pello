@@ -122,6 +122,11 @@ the UI, so automations do not depend on the language.
 Alarm sensors carry the decoded conditions in the `messages` attribute; the summary sensor lists
 all of them in `active`.
 
+`exchanger_cleaning_due` turns on once the pellets burnt since the last exchanger cleaning reach
+the cleaning interval; it also shows both amounts as attributes. After cleaning, press
+*Acknowledge alarms*: the controller resets the pellet counter on acknowledgement and offers no
+separate command for it.
+
 ### Disabled by default
 
 Every remaining register of the dictionary — hysteresis, PID, ignition and cleaning parameters,
@@ -153,10 +158,11 @@ grant to the account:
 | Room temperature hysteresis | `ob1_pok_hist` |
 | Auto summer outdoor temperature and hysteresis | `autolato_tzew`, `autolato_hist` |
 | Heating pumps start temperature | `pomp_co_ton` |
+| Exchanger cleaning interval (kg of pellets) | `clean_exch_kg` |
 | Operating mode (manual, automatic) | `tryb_auto`, state read from `tryb_auto_state` |
 | Season mode (winter, summer, auto summer) | `zima_lato` |
 | Hot water mode (off, schedule, on, +1 h, +2 h) | `cwu_state` |
-| Acknowledge alarms | `cmd_ackalarm` |
+| Acknowledge alarms (also resets the exchanger cleaning counter) | `cmd_ackalarm` |
 | Restart (disabled by default) | `cmd_reset` |
 | Action `pello.add_fuel` (refuel) | `add_fuel` |
 | Power output switches, manual mode only | `out_pomp1`, `out_pomp2`, `out_cwu`, `out_miesz`, `out_tank`, `out_pod`, `out_dm`, `out_aux`, `out_clean_wym`, `mpl_feed`, `mpl_heat`, `mpl_clean` |
